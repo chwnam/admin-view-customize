@@ -1,0 +1,77 @@
+function <author>_avc_simple_pointer_load( $hook ) {
+	if( $hook == 'options-general.php' ) {
+		wp_enqueue_style( 'wp-pointer' );
+		wp_enqueue_script( 'avc-pointer-simple', plugins_url( 'statics/js/avc-pointer-simple.js', __FILE__ ), array( 'wp-pointer' ) );
+	}
+}
+
+function <author>_avc_dashboard_widget() {
+	wp_add_dashboard_widget(
+		'avc_dashboard',         // Widget slug.
+		'AVC Dashboard',         // Title.
+		__callback_func__,        // Display function.
+		__callback_func__,        // Control function
+	);
+}
+
+// dashboard output
+function <author>_avc_dashboard_display( $post, $callback_args ) {
+	echo '<span class="dashicons dashicons-star-empty"></span>';
+	echo '<span>Ok! 여기는 우리 위젯이에요.</span>';
+	echo '<p>AVC: ' . get_transient('avc');
+	if( !get_transient('avc') ) echo '<p>configure 버튼을 눌러 값을 설정해 보세요. 몇초간만 값이 유지됩니다.</p>';
+}
+
+// control output
+function <author>_avc_dashboard_control( $post, $callback_args ) {
+	if( isset( $_POST['avc'] ) ) {
+		set_transient( 'avc', $_POST['avc'], 15 );
+	}
+	?>
+	<label for="avc">AVC Transient value:</label>
+	<input type="text" name="avc" id="avc" value="<?=get_transient('avc')?>" />
+	<?php
+}
+
+function <author>_avc_add_meta_boxes() {
+	add_meta_box( 'avc_meta', 'AVC Metabox', 'avc_meta_box', 'post', 'advanced' );
+}
+
+// metabox callback
+function <author>_avc_meta_box( $post ) {
+	echo whatever_you_want;
+}
+
+public function widget( $args, $instance ) {
+
+    $title = apply_filters( 'widget_title', empty( $instance['title'] ) ? 'My Info': $instance['title'], $instance, $this->id_base );
+
+    $title = esc_attr( $title );
+    $movie = esc_attr( $instance['movie'] );
+    $song  = esc_attr( $instance['song'] );
+
+    echo $args['before_widget'];
+    echo $args['before_title'] . $title . $args['after_title'];
+    echo "<ul>";
+    echo "<li>Fav Movie: $movie</li>";
+    echo "<li>Fav Song: $song</li>";
+    echo "</ul>";
+    echo $args['after_widget'];
+}
+
+public function update( $new_instance, $old_instance ) {
+
+    $instance = $old_instance;
+    $instance['title'] = sanitize_text_field( $new_instance['title'] );
+    $instance['movie'] = sanitize_text_field( $new_instance['movie'] );
+    $instance['song']  = sanitize_text_field( $new_instance['song'] );
+
+    return $instance;
+}
+
+public function form( $instance ) {
+    $defaults = array( 'title' => 'My Info', 'movie' => '', 'song' => '' );
+    $instance = wp_parse_args( (array)$instance, $defaults );
+    extract( $instance );
+    include( plugin_dir_path( __FILE__) . 'includes/widget-form-content.php' );
+}
