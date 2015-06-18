@@ -1,6 +1,6 @@
 <?php
 /*
- * Plugin Name: admin-view-customize
+ * _Plugin Name: admin-view-customize
  * Description: WordPress Plugin #5 sample plugin. This code is split!
  */
 
@@ -26,9 +26,9 @@ if( has_filter( 'update_footer' ) ) {
 }
 
 // override update footer (version number)
-add_filter( 'update_footer', function() {
+add_filter( 'update_footer', function( $message ) {
 	return whatever_you_want;
-}, 20, 0 );
+}, 20, 1 );
 
 
 // dashboard widget registration
